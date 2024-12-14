@@ -1,0 +1,41 @@
+{
+  "name": "complete_system",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@mui/icons-material": "^6.1.9",
+    "@mui/lab": "^6.0.0-beta.17",
+    "@mui/material": "^6.1.9",
+    "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/nodemailer": "^6.4.17",
+    "@uploadthing/react": "^7.1.2",
+    "axios": "^1.7.8",
+    "bcryptjs": "^2.4.3",
+    "formik": "^2.4.6",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.8.3",
+    "next": "15.0.3",
+    "nodemailer": "^6.9.16",
+    "notistack": "^3.0.1",
+    "react": "19.0.0-rc-66855b96-20241106",
+    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "uploadthing": "^7.4.0",
+    "yup": "^1.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "typescript": "^5"
+  }
+}
