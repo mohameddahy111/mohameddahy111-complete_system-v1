@@ -58,7 +58,7 @@ export default function CategoriesPage(props: ICategoriesPageProps) {
  
    ) : (
     <>
-    {categories?.data?.map((item :any , index) => (
+    {categories?.data?.map((item :any , index:number) => (
    <TableRow key={index}>
     <TableCell align="center">
       <Image src={item.image.img_url} alt="image" width={40} height={50} />
