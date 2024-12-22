@@ -64,7 +64,7 @@ export default function BrasndsPage({}: IBrasndsPageProps) {
       </TableRow>
      ) : (
       <>
-       {brands?.data?.map((item: any, index) => (
+       {brands?.data?.map((item: any, index: number) => (
         <TableRow key={index}>
          <TableCell align="center">
           <Image src={item.image.img_url} alt="image" width={40} height={50} />
