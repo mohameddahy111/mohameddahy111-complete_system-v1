@@ -1,9 +1,12 @@
 import { Box, Typography } from "@mui/material";
 import * as React from "react";
+import { getDashboard } from "../actions";
 
 export interface IDashboardProps {}
 
-export default function Dashboard({}: IDashboardProps) {
+export default async function Dashboard({}: IDashboardProps) {
+  await getDashboard();
+//  console.log(data)
   return (
     <Box
       width={"100%"}

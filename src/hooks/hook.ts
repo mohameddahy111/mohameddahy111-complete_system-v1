@@ -4,7 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 export const useGetData = (url: string) => {
-  const [data, setData] = useState<[] | null>([]);
+  const [data, setData] = useState<[] | null|any>([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState<boolean | null>(null);
   const getData = async () => {

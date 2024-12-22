@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 {
  /**
    name: "",
-   price: "",
-   category: "",
-   brand: "",
+   slug: "",
+   categoryId: "",
+   brandId: "",
    stock: "",
    stock_min: "",
    serial_number: "",
@@ -47,24 +47,15 @@ import mongoose from "mongoose";
 export const porductSchema = new mongoose.Schema({
  name: {
   type: String,
+  required: true,
+  unique: true
+ },
+ slug :{type:String , required: true , unique: true},
+ categoryId: {
+  type: mongoose.Schema.Types.ObjectId,ref: "Category",
   required: true
  },
- category: {
-  type: String,
-  required: true
- },
- brand: {
-  type: String,
-  required: true
- },
- stock: {
-  type: Number,
-  required: true
- },
- stock_min: {
-  type: Number,
-  required: true
- },
+ brandId: { type: mongoose.Schema.Types.ObjectId,ref: "Brand",required: true },
  serial_number: {
   type: String,
  
@@ -90,7 +81,7 @@ export const porductSchema = new mongoose.Schema({
    required: true
   },
   value_added_tex: {
-   type: String,
+   type: Number,
    required: true
   },
   adds_consts: {
@@ -113,11 +104,18 @@ export const porductSchema = new mongoose.Schema({
     default: false
    },
    offer_value: {
-    type: String
+    type: Number
    },
    offer_value_type: {
     type: String
-   }
+   },
+   stock: {
+    type: Number,
+   },
+   stock_min: {
+    type: Number,
+   },
+  
   },
 
   flexible: [
@@ -137,7 +135,14 @@ export const porductSchema = new mongoose.Schema({
     },
     offer_value_type: {
      type: String
-    }
+    },
+    stock: {
+      type: Number,
+     },
+     stock_min: {
+      type: Number,
+     },
+    
    }
   ]
  },
@@ -154,7 +159,7 @@ export const porductSchema = new mongoose.Schema({
  swiper_images: {
   type: Array
  }
-},{timestamps: true  , });
+},{timestamps: true  , toJSON: { virtuals: true }, toObject: { virtuals: true }});
 
 const Product = mongoose.models.Product || mongoose.model("Product", porductSchema);
 

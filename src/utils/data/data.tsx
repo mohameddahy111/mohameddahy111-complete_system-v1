@@ -17,6 +17,7 @@ export const menuSidebar = [
     title: "Main Dashboard",
     path: "/dashboard",
     icon: <DashboardOutlined sx={{ color: "primary.main" }} />
+    
   },
   {
     title: "Clients",

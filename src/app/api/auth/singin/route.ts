@@ -5,7 +5,6 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import Admin from "@/schemas/employees.schema";
-import { AdminRedirect } from "@/app/actions";
 
 export async function POST(req: NextRequest) {
   dbContact(process.env.MONGODB_PRODUCT as string);

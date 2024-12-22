@@ -17,7 +17,7 @@ export interface IProductsPageProps {}
 
 export default function ProductsPage(props: IProductsPageProps) {
  const { data, loading } = useGetData("/api/product");
- console.log(data);
+
 
  return (
   <Box
@@ -30,6 +30,7 @@ export default function ProductsPage(props: IProductsPageProps) {
    p={2}
    borderRadius={3}
    boxShadow={2}
+   className={"bg_box_gradient"}
   >
    <TablePublic
     headers={["Image", "Name", "Serial Number", "Category", "Brand", "Stock"]}
@@ -58,7 +59,7 @@ export default function ProductsPage(props: IProductsPageProps) {
       </TableRow>
      ) : (
       <>
-       {data?.map((ele: any, index) => (
+       {data?.map((ele: any, index: number) => (
         <TableRow key={index}>
          <TableCell align="center">
           <img
@@ -98,7 +99,7 @@ export default function ProductsPage(props: IProductsPageProps) {
            variant="body1"
            component="p"
           >
-           {ele?.category}
+           {ele?.categoryId.title}
           </Typography>
          </TableCell>
          <TableCell align="center">
@@ -107,7 +108,7 @@ export default function ProductsPage(props: IProductsPageProps) {
            variant="body1"
            component="p"
           >
-           {ele?.brand}
+           {ele?.brandId.title}
           </Typography>
          </TableCell>
          <TableCell align="center">

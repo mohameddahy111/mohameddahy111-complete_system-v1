@@ -36,6 +36,7 @@ import { deleteImageApi } from "@/app/actions";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useGetData } from "@/hooks/hook";
+import { LoadingButton } from "@mui/lab";
 
 export interface IAddProductProps {}
 
@@ -49,6 +50,7 @@ export interface IItem {
 
 export default function AddProduct({}: IAddProductProps) {
  const [brandList, setBrandList] = React.useState<any>([]);
+ const [lowestPrice, setLowestPrice] = React.useState<number>(0);
  const brands = useGetData("/api/product/brands");
  const categories = useGetData("/api/product/category");
  const router = useRouter();
@@ -56,25 +58,25 @@ export default function AddProduct({}: IAddProductProps) {
   initialValues: {
    name: "",
    price: "",
-   category: "",
-   brand: "",
-   stock: "",
-   stock_min: "",
+   categoryId: "",
+   brandId: "",
    serial_number: "",
    description: "",
    pricing_policy: {
-    purchase_price: "",
-    additionalـcosts: "",
-    profitـrate: "",
+    purchase_price: 0,
+    additionalـcosts: 0,
+    profitـrate: 0,
     profitـrate_type: "pre",
-    value_added_tex: "",
-    adds_consts: "",
+    value_added_tex: 0,
+    adds_consts: 0,
     price_type: "fixed",
     fixed: {
      price: "",
      offer: false,
      offer_value: "",
-     offer_value_type: "pre"
+     offer_value_type: "pre",
+     stock: 0,
+     stock_min: 0
     },
     flexible: [
      {
@@ -82,7 +84,9 @@ export default function AddProduct({}: IAddProductProps) {
       price: "",
       offer: false,
       offer_value: "",
-      offer_value_type: "pre"
+      offer_value_type: "pre",
+      stock: 0,
+      stock_min: 0
      }
     ]
    },
@@ -93,6 +97,7 @@ export default function AddProduct({}: IAddProductProps) {
    swiper_images: []
   },
   onSubmit: async (values) => {
+    console.log(values)
    await axios
     .post("/api/product", values)
     .then((response) => {
@@ -102,7 +107,7 @@ export default function AddProduct({}: IAddProductProps) {
       });
       formik.resetForm();
       localStorage.removeItem("swiper_images");
-      localStorage.removeItem("main_img");
+      localStorage.removeItem("uploader");
       router.push("/dashboard/products");
      }
     })
@@ -113,6 +118,22 @@ export default function AddProduct({}: IAddProductProps) {
     });
   }
  });
+ React.useEffect(() => {
+  const price =
+   formik.values.pricing_policy.purchase_price +
+   formik.values.pricing_policy.additionalـcosts +
+   (formik.values.pricing_policy.profitـrate_type === "pre"
+    ? (formik.values.pricing_policy.purchase_price *
+       formik.values.pricing_policy.profitـrate) /
+      100
+    : formik.values.pricing_policy.profitـrate) +
+   formik.values.pricing_policy.adds_consts;
+  setLowestPrice(
+   Math.ceil(
+    price + (price * formik.values.pricing_policy.value_added_tex) / 100
+   )
+  );
+ }, [formik.values.pricing_policy]);
 
  function addNewPrice() {
   const item = {
@@ -180,11 +201,11 @@ export default function AddProduct({}: IAddProductProps) {
  React.useEffect(() => {
   if (brands?.data) {
    const list = brands?.data?.filter(
-    (item: any) => item.category_id === formik.values.category
+    (item: any) => item.category_id === formik.values.categoryId
    );
    setBrandList(list);
   }
- }, [formik.values.category]);
+ }, [formik.values.categoryId]);
  return (
   <form onSubmit={formik.handleSubmit}>
    <Box
@@ -269,14 +290,14 @@ export default function AddProduct({}: IAddProductProps) {
          </Box>
         ) : (
          <TextField
-          name="category"
+          name="categoryId"
           placeholder="Enter Category"
           fullWidth
           size="small"
           onChange={formik.handleChange}
-          value={formik.values.category}
-          error={formik.touched.category && Boolean(formik.errors.category)}
-          helperText={formik.touched.category && formik.errors.category}
+          value={formik.values.categoryId}
+          error={formik.touched.categoryId && Boolean(formik.errors.categoryId)}
+          helperText={formik.touched.categoryId && formik.errors.categoryId}
           select
           label="Category"
           sx={{
@@ -316,14 +337,14 @@ export default function AddProduct({}: IAddProductProps) {
          </Box>
         ) : (
          <TextField
-          name="brand"
+          name="brandId"
           placeholder="Enter brand"
           fullWidth
           size="small"
           onChange={formik.handleChange}
-          value={formik.values.brand}
-          error={formik.touched.brand && Boolean(formik.errors.brand)}
-          helperText={formik.touched.brand && formik.errors.brand}
+          value={formik.values.brandId}
+          error={formik.touched.brandId && Boolean(formik.errors.brandId)}
+          helperText={formik.touched.brandId && formik.errors.brandId}
           select
           label="Brand"
           sx={{
@@ -344,65 +365,6 @@ export default function AddProduct({}: IAddProductProps) {
           ))}
          </TextField>
         )}
-       </Box>
-      </Grid2>
-      <Grid2 size={{ xs: 12, sm: 6, lg: 4 }}>
-       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <label>Stock</label>
-        <TextField
-         name="stock"
-         placeholder="Enter stock"
-         fullWidth
-         size="small"
-         onChange={formik.handleChange}
-         value={formik.values.stock}
-         error={formik.touched.stock && Boolean(formik.errors.stock)}
-         helperText={formik.touched.stock && formik.errors.stock}
-         slotProps={{
-          input: {
-           endAdornment: (
-            <InputAdornment position="end">
-             <WarehouseOutlined />{" "}
-            </InputAdornment>
-           ),
-           sx: { borderRadius: 4 }
-          }
-         }}
-         sx={{
-          boxShadow: "0px 0px 2px  rgb(189, 184, 241)",
-          borderRadius: 4
-         }}
-        />
-       </Box>
-      </Grid2>
-      <Grid2 size={{ xs: 12, sm: 6, lg: 4 }}>
-       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <label> Min number of stock</label>
-        <TextField
-         sx={{
-          boxShadow: "0px 0px 2px  rgb(189, 184, 241)",
-          borderRadius: 4
-         }}
-         name="stock_min"
-         placeholder="Enter Min number of stock"
-         fullWidth
-         size="small"
-         onChange={formik.handleChange}
-         value={formik.values.stock_min}
-         error={formik.touched.stock_min && Boolean(formik.errors.stock_min)}
-         helperText={formik.touched.stock_min && formik.errors.stock_min}
-         slotProps={{
-          input: {
-           endAdornment: (
-            <InputAdornment position="end">
-             <ArrowDownwardOutlined sx={{ color: red[300] }} />{" "}
-             <WarehouseOutlined sx={{ color: red[300] }} />{" "}
-            </InputAdornment>
-           ),
-           sx: { borderRadius: 4 }
-          }
-         }}
-        />
        </Box>
       </Grid2>
       <Grid2 size={{ xs: 12, sm: 6, lg: 4 }}>
@@ -499,12 +461,13 @@ export default function AddProduct({}: IAddProductProps) {
       <Grid2 size={{ xs: 12, sm: 6, lg: 4 }}>
        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <label>Purchase price</label>
-      
+
         <TextField
          name="pricing_policy.purchase_price"
          placeholder="Enter Purchase price"
          fullWidth
          size="small"
+         type="number"
          onChange={formik.handleChange}
          value={formik.values.pricing_policy.purchase_price}
          error={
@@ -539,6 +502,7 @@ export default function AddProduct({}: IAddProductProps) {
          name="pricing_policy.additionalـcosts"
          placeholder="Enter Additional costs"
          fullWidth
+         type="number"
          size="small"
          onChange={formik.handleChange}
          value={formik.values.pricing_policy.additionalـcosts}
@@ -572,6 +536,7 @@ export default function AddProduct({}: IAddProductProps) {
         <label>Profit rate</label>
         <TextField
          name="pricing_policy.profitـrate"
+         type="number"
          placeholder="Enter Profit rate"
          fullWidth
          size="small"
@@ -619,6 +584,7 @@ export default function AddProduct({}: IAddProductProps) {
          name="pricing_policy.adds_consts"
          placeholder="Enter Adds costs"
          fullWidth
+         type="number"
          size="small"
          slotProps={{
           input: {
@@ -649,6 +615,7 @@ export default function AddProduct({}: IAddProductProps) {
          name="pricing_policy.value_added_tex"
          placeholder="Enter Value Added Tax"
          fullWidth
+         type="number"
          size="small"
          slotProps={{
           input: {
@@ -676,32 +643,8 @@ export default function AddProduct({}: IAddProductProps) {
       </Grid2>{" "}
       <Grid2 size={{ xs: 12, sm: 6, lg: 4 }}>
        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <label>Adds costs </label>
-        <TextField
-         name="pricing_policy.profitـrate"
-         placeholder="Enter Adds costs"
-         fullWidth
-         size="small"
-         slotProps={{
-          input: {
-           sx: { borderRadius: 4 }
-          }
-         }}
-         sx={{
-          boxShadow: "0px 0px 2px  rgb(189, 184, 241)",
-          borderRadius: 4
-         }}
-         onChange={formik.handleChange}
-         value={formik.values.pricing_policy.profitـrate}
-         error={
-          formik.touched.pricing_policy?.profitـrate &&
-          Boolean(formik.errors.pricing_policy?.profitـrate)
-         }
-         helperText={
-          formik.touched.pricing_policy?.profitـrate &&
-          formik.errors.pricing_policy?.profitـrate
-         }
-        />
+        <label>Lowest price</label>
+        <Typography>{lowestPrice} $</Typography>
        </Box>
       </Grid2>
       <Grid2 size={{ xs: 12 }}>
@@ -715,7 +658,7 @@ export default function AddProduct({}: IAddProductProps) {
          <RadioGroup
           row
           aria-labelledby="demo-radio-buttons-group-label"
-          defaultValue="female"
+          //  defaultValue={'flexible'}
           name="pricing_policy.price_type"
           onChange={formik.handleChange}
           value={formik.values.pricing_policy.price_type}
@@ -735,7 +678,7 @@ export default function AddProduct({}: IAddProductProps) {
         {formik.values.pricing_policy.price_type === "fixed" ? (
          <Box className={"move_box"}>
           <Grid2 container spacing={2} alignItems={"center"}>
-           <Grid2 size={{ xs: 12 }}>
+           <Grid2 size={{ xs: 12, md: 6, lg: 6 }}>
             <Box
              sx={{
               display: "flex",
@@ -749,7 +692,7 @@ export default function AddProduct({}: IAddProductProps) {
               justifyContent={"start"}
               flexDirection={{ xs: "column", md: "row" }}
               alignItems={{ xs: "start", md: "center" }}
-              gap={{ xs: 2, md: 5 }}
+              gap={{ xs: 2, md: 6, lg: 6 }}
              >
               <TextField
                type="number"
@@ -784,6 +727,7 @@ export default function AddProduct({}: IAddProductProps) {
                 borderRadius: 4
                }}
               />
+
               <Box>
                <FormGroup>
                 <FormControlLabel
@@ -852,6 +796,77 @@ export default function AddProduct({}: IAddProductProps) {
              </Box>
             </Box>
            </Grid2>
+           <Grid2 size={{ xs: 12, sm: 6, lg: 3 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+             <label>Stock</label>
+             <TextField
+              name="pricing_policy.fixed.stock"
+              placeholder="Enter stock"
+              fullWidth
+              size="small"
+              onChange={formik.handleChange}
+              value={formik.values.pricing_policy.fixed.stock}
+              error={
+               formik.touched.pricing_policy?.fixed?.stock &&
+               Boolean(formik.errors.pricing_policy?.fixed?.stock)
+              }
+              helperText={
+               formik.touched.pricing_policy?.fixed?.stock &&
+               formik.errors.pricing_policy?.fixed?.stock
+              }
+              slotProps={{
+               input: {
+                endAdornment: (
+                 <InputAdornment position="end">
+                  <WarehouseOutlined />{" "}
+                 </InputAdornment>
+                ),
+                sx: { borderRadius: 4 }
+               }
+              }}
+              sx={{
+               boxShadow: "0px 0px 2px  rgb(189, 184, 241)",
+               borderRadius: 4
+              }}
+             />
+            </Box>
+           </Grid2>
+           <Grid2 size={{ xs: 12, sm: 6, lg: 3 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+             <label> Min number of stock</label>
+             <TextField
+              sx={{
+               boxShadow: "0px 0px 2px  rgb(189, 184, 241)",
+               borderRadius: 4
+              }}
+              name="pricing_policy.fixed.stock_min"
+              placeholder="Enter Min number of stock"
+              fullWidth
+              size="small"
+              onChange={formik.handleChange}
+              value={formik.values.pricing_policy.fixed.stock_min}
+              error={
+               formik.touched.pricing_policy?.fixed?.stock_min &&
+               Boolean(formik.errors.pricing_policy?.fixed?.stock_min)
+              }
+              helperText={
+               formik.touched.pricing_policy?.fixed?.stock_min &&
+               formik.errors.pricing_policy?.fixed?.stock_min
+              }
+              slotProps={{
+               input: {
+                endAdornment: (
+                 <InputAdornment position="end">
+                  <ArrowDownwardOutlined sx={{ color: red[300] }} />{" "}
+                  <WarehouseOutlined sx={{ color: red[300] }} />{" "}
+                 </InputAdornment>
+                ),
+                sx: { borderRadius: 4 }
+               }
+              }}
+             />
+            </Box>
+           </Grid2>
           </Grid2>
          </Box>
         ) : null}
@@ -882,7 +897,7 @@ export default function AddProduct({}: IAddProductProps) {
                   size="small"
                   type={"text"}
                   onChange={formik.handleChange}
-                  value={item.title}
+                  defaultValue={item.title}
                   //  error={
                   //   formik.touched.pricing_policy?.flexible?.[index]?.price &&
                   //   Boolean(
@@ -914,7 +929,7 @@ export default function AddProduct({}: IAddProductProps) {
                   size="small"
                   type={"number"}
                   onChange={formik.handleChange}
-                  value={item.price}
+                  defaultValue={item.price}
                   //  error={
                   //   formik.touched.pricing_policy?.flexible?.[index]?.price &&
                   //   Boolean(
@@ -1010,6 +1025,74 @@ export default function AddProduct({}: IAddProductProps) {
                   />
                  </Box>
                 ) : null}
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                 <label>Stock</label>
+                 <TextField
+                  name={`pricing_policy.flexible[${index}].stock`}
+                  placeholder="Enter stock"
+                  fullWidth
+                  size="small"
+                  onChange={formik.handleChange}
+                  defaultValue={item.stock}
+                  // error={
+                  //  formik.touched.pricing_policy?.flexible?.stock &&
+                  //  Boolean(formik.errors.pricing_policy?.fixed?.stock)
+                  // }
+                  // helperText={
+                  //  formik.touched.pricing_policy?.fixed?.stock &&
+                  //  formik.errors.pricing_policy?.fixed?.stock
+                  // }
+                  slotProps={{
+                   input: {
+                    endAdornment: (
+                     <InputAdornment position="end">
+                      <WarehouseOutlined />{" "}
+                     </InputAdornment>
+                    ),
+                    sx: { borderRadius: 4 }
+                   }
+                  }}
+                  sx={{
+                   boxShadow: "0px 0px 2px  rgb(189, 184, 241)",
+                   borderRadius: 4
+                  }}
+                 />
+                </Box>
+
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                 <label> Min number of stock</label>
+                 <TextField
+                  sx={{
+                   boxShadow: "0px 0px 2px  rgb(189, 184, 241)",
+                   borderRadius: 4
+                  }}
+                  name={`pricing_policy.flexible[${index}].stock_min`}
+                  placeholder="Enter Min number of stock"
+                  fullWidth
+                  size="small"
+                  onChange={formik.handleChange}
+                  defaultValue={item.stock_min}
+                  // error={
+                  //  formik.touched.pricing_policy?.fixed?.stock_min &&
+                  //  Boolean(formik.errors.pricing_policy?.fixed?.stock_min)
+                  // }
+                  // helperText={
+                  //  formik.touched.pricing_policy?.fixed?.stock_min &&
+                  //  formik.errors.pricing_policy?.fixed?.stock_min
+                  // }
+                  slotProps={{
+                   input: {
+                    endAdornment: (
+                     <InputAdornment position="end">
+                      <ArrowDownwardOutlined sx={{ color: red[300] }} />{" "}
+                      <WarehouseOutlined sx={{ color: red[300] }} />{" "}
+                     </InputAdornment>
+                    ),
+                    sx: { borderRadius: 4 }
+                   }
+                  }}
+                 />
+                </Box>
                </Box>
               </Box>
              )
@@ -1114,20 +1197,19 @@ export default function AddProduct({}: IAddProductProps) {
       </Box>
      ) : null}
 
-     <Box
-      border={`2px dashed ${indigo[400]}`}
-      borderRadius={2}
-      // width={"100%"}
-      my={3}
-      // height={"300px"}
-      display={"flex"}
-      justifyContent={"center"}
-      alignItems={"center"}
-      flexDirection={"column"}
-      gap={2}
-      p={10}
-     >
-      {!formik.values?.main_img?.url ? (
+     {!formik.values?.main_img?.url ? (
+      <Box
+       borderRadius={2}
+       // width={"100%"}
+       my={3}
+       // height={"300px"}
+       display={"flex"}
+       justifyContent={"center"}
+       alignItems={"center"}
+       flexDirection={"column"}
+       gap={2}
+       p={10}
+      >
        <UploadButton
         endpoint="imageUploader"
         onClientUploadComplete={(res: any) => {
@@ -1148,8 +1230,8 @@ export default function AddProduct({}: IAddProductProps) {
          console.log(`ERROR! ${JSON.parse(JSON.stringify(error))}`);
         }}
        />
-      ) : null}
-     </Box>
+      </Box>
+     ) : null}
      <Typography
       // alignSelf={"self-start"}
       variant="h6"
@@ -1219,9 +1301,13 @@ export default function AddProduct({}: IAddProductProps) {
      </Box>
     </Box>
     <Box display={"flex"} justifyContent={"end"} gap={2}>
-     <Button variant="contained" type="submit">
+     <LoadingButton
+      loading={formik.isSubmitting}
+      variant="contained"
+      type="submit"
+     >
       save
-     </Button>
+     </LoadingButton>
     </Box>
    </Box>
   </form>

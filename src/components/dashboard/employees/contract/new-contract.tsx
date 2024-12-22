@@ -18,6 +18,7 @@ import {
   Typography
 } from "@mui/material";
 import { useFormik } from "formik";
+import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import * as React from "react";
 
@@ -35,6 +36,7 @@ export default function NewContarct({
   const { enqueueSnackbar } = useSnackbar();
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
+  const router = useRouter()
   const handleClose = () => {
     formik.resetForm();
     setOpen(false);
@@ -58,6 +60,8 @@ export default function NewContarct({
         enqueueSnackbar(result.message, {
           variant: "success"
         });
+        router.push("/dashboard/employees")
+        handleClose()
       } else {
         enqueueSnackbar(result.message, {
           variant: "error"

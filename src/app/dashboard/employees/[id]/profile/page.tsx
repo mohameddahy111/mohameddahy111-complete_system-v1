@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import TablePublic from "@/components/table-container";
-import { VisibilityOutlined } from "@mui/icons-material";
 import { green, red } from "@mui/material/colors";
 
 export interface IProfilePageProps {
@@ -241,7 +240,7 @@ export default async function ProfilePage(params: IProfilePageProps) {
                     day: "numeric",
                     hour: "numeric",
                     minute: "numeric"
-                  }).format(new Date(data.createdAt))}
+                  }).format(new Date(data?.createdAt))}
                 </Typography>
               </Typography>
             </Grid2>
@@ -457,7 +456,7 @@ export default async function ProfilePage(params: IProfilePageProps) {
               employeeName={data.name}
             />
           </Box>
-          {data.all_contract.length === 0 ? (
+          {data?.all_contract?.length === 0 ? (
             <Typography
               color="error"
               align="center"
@@ -479,8 +478,8 @@ export default async function ProfilePage(params: IProfilePageProps) {
                 ]}
               >
                 <TableBody>
-                  {data.all_contract
-                    .sort((a: any, b: any) =>
+                  {data?.all_contract
+                    ?.sort((a: any, b: any) =>
                       a.end_date < b.end_date ? 1 : -1
                     )
                     .map((contract: any) => (
