@@ -17,8 +17,6 @@ export interface IProductsPageProps {}
 
 export default function ProductsPage(props: IProductsPageProps) {
  const { data, loading } = useGetData("/api/product");
-
-
  return (
   <Box
    mt={5}
