@@ -41,7 +41,6 @@ export default function ProductId({ params }: IProductIdProps) {
   offer: false,
   id: ""
  });
- console.log(data);
  function changeImage(url: string) {
   setImage(url);
  }

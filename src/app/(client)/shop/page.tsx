@@ -14,7 +14,6 @@ export interface IPageProps {}
 
 export default async function Page(props: IPageProps) {
  const products = await getProducts();
- console.log(products);
 
  return (
   <Box>
