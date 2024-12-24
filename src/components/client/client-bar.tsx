@@ -26,6 +26,7 @@ import {
 import Image from "next/image";
 import * as React from "react";
 import TemporaryDrawer from "./mobile-drawer";
+import CartDailog from "./cart/cart-dailog";
 
 export interface IClientbarProps {
  comanyData: any;
@@ -214,6 +215,7 @@ export default function Clientbar({ comanyData, children }: IClientbarProps) {
      </Box>
     </Box>
    </footer>
+   <CartDailog />
   </ThemeProvider>
  );
 }
